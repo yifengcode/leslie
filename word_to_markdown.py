@@ -98,6 +98,8 @@ def main(argv=None):
     )
     args = parser.parse_args(argv)
     output_path = args.output or args.input.with_suffix(".md")
+    if args.input.resolve() == output_path.resolve():
+        parser.error("output path must not overwrite the input document")
 
     try:
         markdown = convert_document(args.input)

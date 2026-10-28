@@ -47,6 +47,17 @@ class ConvertDocumentTests(unittest.TestCase):
             self.assertEqual(result, 0)
             self.assertEqual(output_path.read_text(encoding="utf-8"), "Hello\n")
 
+    def test_cli_rejects_output_path_that_would_overwrite_input(self):
+        with tempfile.TemporaryDirectory() as directory:
+            input_path = Path(directory) / "source.docx"
+            Document().save(input_path)
+
+            with self.assertRaises(SystemExit) as error:
+                main([str(input_path), "--output", str(input_path)])
+
+            self.assertEqual(error.exception.code, 2)
+            self.assertTrue(input_path.exists())
+
 
 if __name__ == "__main__":
     unittest.main()
